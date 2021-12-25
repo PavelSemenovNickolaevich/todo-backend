@@ -15,6 +15,7 @@ import java.util.Objects;
 
 справочноное значение - категория пользователя
 может использовать для своих задач
+содержит статистику по каждой категории
 
  */
 
@@ -42,7 +43,7 @@ public class Category {
     @Column(name = "uncompleted_count", updatable = false) // т.к. это поле высчитывается автоматически в триггерах - вручную его не обновляем (updatable = false)
     private Long uncompletedCount;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id") // по каким полям связаны эти 2 объекта (foreign key)
     private User user;
 
