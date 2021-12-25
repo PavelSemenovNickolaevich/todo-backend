@@ -6,6 +6,7 @@ import ru.java.backend.todo.todobackend.entity.Category;
 import ru.java.backend.todo.todobackend.repo.CategoryRepository;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 
@@ -21,5 +22,13 @@ public class CategoryService {
 
     public Category findById(long id) {
         return repository.findById(id).get();
+    }
+
+    public List<Category> findAll(String email) {
+        return repository.findByUserEmailOrderByTitleAsc(email);
+    }
+
+    public Category add(Category category) {
+        return repository.save(category);
     }
 }
