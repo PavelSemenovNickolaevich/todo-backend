@@ -35,10 +35,25 @@ public class CategoryController {
             return new ResponseEntity("reduundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE);
         }
         //если передать пустое значение title
-        if(category.getTitle() == null || category.getTitle().trim().length() == 0) {
+        if (category.getTitle() == null || category.getTitle().trim().length() == 0) {
             return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
         }
 
         return ResponseEntity.ok(categoryService.add(category));
+    }
+
+    @PutMapping("/update")
+    public ResponseEntity update(@RequestBody Category category) {
+        //Проверка на обязательные  параметры
+        if (category.getId() == null || category.getId() == 0) {
+            return new ResponseEntity("missed param: id ", HttpStatus.NOT_ACCEPTABLE);
+        }
+        //если передать пустое значение title
+        if (category.getTitle() == null || category.getTitle().trim().length() == 0) {
+            return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        categoryService.update(category);
+        return new ResponseEntity(HttpStatus.OK);
     }
 }
