@@ -15,15 +15,14 @@ public class LoggingAspect {
 
     //аспект будет выполняться для всех методов из пакета контроллеров
     @Around("execution(* ru.java.backend.todo.todobackend.controller..*(..)))")
-    public Object profileControllerMethods(ProceedingJoinPoint proceedingJoinPoint) throws Throwable
-    {
+    public Object profileControllerMethods(ProceedingJoinPoint proceedingJoinPoint) throws Throwable {
         MethodSignature methodSignature = (MethodSignature) proceedingJoinPoint.getSignature();
 
         // получить информацию о том, какой класс и метод выполняется
         String className = methodSignature.getDeclaringType().getSimpleName();
         String methodName = methodSignature.getName();
 
-        log.info("-------- Executing "+ className + "." + methodName + "   ----------- ");
+        log.info("-------- Executing " + className + "." + methodName + "   ----------- ");
 
         StopWatch countDown = new StopWatch();
 
@@ -32,7 +31,7 @@ public class LoggingAspect {
         Object result = proceedingJoinPoint.proceed();
         countDown.stop();
 
-        log.info("-------- Execution time of  "+ className + "." + methodName + " :: " + countDown.getTotalTimeMillis() + "ms  ----------- ");
+        log.info("-------- Execution time of  " + className + "." + methodName + " :: " + countDown.getTotalTimeMillis() + "ms  ----------- ");
 
         return result;
     }
