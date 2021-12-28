@@ -39,4 +39,8 @@ public class CategoryService {
     public void deleteById(long id) {
         repository.deleteById(id);
     }
+
+    public List<Category> findByTitle(String title, String email) {
+        return repository.findByTitle(title, email);
+    }
 }

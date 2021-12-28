@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.java.backend.todo.todobackend.entity.Category;
+import ru.java.backend.todo.todobackend.search.CategorySearchValues;
 import ru.java.backend.todo.todobackend.service.CategoryService;
 
 import javax.websocket.server.PathParam;
@@ -69,5 +70,21 @@ public class CategoryController {
             return new ResponseEntity("Id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
         }
         return new ResponseEntity(HttpStatus.OK);
+    }
+
+
+    // поиск по любым параметрам CategorySearchValues
+    @PostMapping("/search")
+    public ResponseEntity<List<Category>> search(@RequestBody CategorySearchValues categorySearchValues) {
+
+        // проверка на обязательные параметры
+        if (categorySearchValues.getEmail() == null || categorySearchValues.getEmail().trim().length() == 0) {
+            return new ResponseEntity("missed param: email", HttpStatus.NOT_ACCEPTABLE);
+        }
+
+        // поиск категорий пользователя по названию
+        List<Category> list = categoryService.findByTitle(categorySearchValues.getTitle(), categorySearchValues.getEmail());
+
+        return ResponseEntity.ok(list);
     }
 }
