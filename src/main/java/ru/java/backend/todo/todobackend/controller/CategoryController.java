@@ -8,9 +8,8 @@ import ru.java.backend.todo.todobackend.entity.Category;
 import ru.java.backend.todo.todobackend.search.CategorySearchValues;
 import ru.java.backend.todo.todobackend.service.CategoryService;
 
-import javax.websocket.server.PathParam;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/category")
@@ -61,7 +60,7 @@ public class CategoryController {
         return new ResponseEntity(HttpStatus.OK);
     }
 
-    @DeleteMapping ("/delete/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity deleteById(@PathVariable("id") long id) {
         try {
             categoryService.deleteById(id);
@@ -86,5 +85,19 @@ public class CategoryController {
         List<Category> list = categoryService.findByTitle(categorySearchValues.getTitle(), categorySearchValues.getEmail());
 
         return ResponseEntity.ok(list);
+    }
+
+    @PostMapping("/id")
+    public ResponseEntity<Category> searchCategoryById(@RequestBody Long id) {
+
+        Category category = null;
+
+        try {
+            category = categoryService.findById(id);
+        } catch (NoSuchElementException e) {
+            e.printStackTrace();
+            return new ResponseEntity("Id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+        }
+        return ResponseEntity.ok(category);
     }
 }
