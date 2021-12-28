@@ -6,6 +6,7 @@ import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 
 @Aspect
 @Component
@@ -24,8 +25,14 @@ public class LoggingAspect {
 
         log.info("-------- Executing "+ className + "." + methodName + "   ----------- ");
 
-        // выполняем сам метод
+        StopWatch countDown = new StopWatch();
+
+        //засекаем время
+        countDown.start();
         Object result = proceedingJoinPoint.proceed();
+        countDown.stop();
+
+        log.info("-------- Execution time of  "+ className + "." + methodName + " :: " + countDown.getTotalTimeMillis() + "ms  ----------- ");
 
         return result;
     }
