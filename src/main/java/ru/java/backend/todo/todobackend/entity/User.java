@@ -8,6 +8,7 @@ package ru.java.backend.todo.todobackend.entity;
 
  */
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -39,8 +40,9 @@ public class User {
     @Column(name = "userpassword")
     private String password;
 
-//    @ManyToMany(mappedBy = "users", fetch = FetchType.EAGER)
-//    private Set<Role> roles;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    @ManyToMany(mappedBy = "users")
+    private Set<Role> roles;
 
 
     @Override
