@@ -139,7 +139,7 @@ public class TaskController {
         String title = taskSearchValues.getTitle() != null ? taskSearchValues.getTitle() : null;
 
         // конвертируем Boolean в Integer
-        Integer completed = taskSearchValues.getCompleted() != null ? taskSearchValues.getCompleted() : null;
+        Boolean completed = taskSearchValues.getCompleted() != null && taskSearchValues.getCompleted() == 1 ? true : false;
 
         Long priorityId = taskSearchValues.getPriorityId() != null ? taskSearchValues.getPriorityId() : null;
         Long categoryId = taskSearchValues.getCategoryId() != null ? taskSearchValues.getCategoryId() : null;
@@ -164,16 +164,16 @@ public class TaskController {
         Date dateTo = null;
 
 
-        // выставить 00:00 для начальной даты (если она указана)
+        // выставить 00:01 для начальной даты (если она указана)
         if (taskSearchValues.getDateFrom() != null) {
             Calendar calendarFrom = Calendar.getInstance();
             calendarFrom.setTime(taskSearchValues.getDateFrom());
             calendarFrom.set(Calendar.HOUR_OF_DAY, 0);
-            calendarFrom.set(Calendar.MINUTE, 0);
-            calendarFrom.set(Calendar.SECOND, 0);
-            calendarFrom.set(Calendar.MILLISECOND, 0);
+            calendarFrom.set(Calendar.MINUTE, 1);
+            calendarFrom.set(Calendar.SECOND, 1);
+            calendarFrom.set(Calendar.MILLISECOND, 1);
 
-            dateFrom = calendarFrom.getTime(); // записываем начальную дату с 00:00
+            dateFrom = calendarFrom.getTime(); // записываем начальную дату с 00:01
 
         }
 
