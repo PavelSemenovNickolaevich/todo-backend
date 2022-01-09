@@ -18,6 +18,12 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'ru.java.backend.todo.todobackend.TodoBackendApplication.java'
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
   //  implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -35,3 +41,4 @@ dependencies {
 test {
     useJUnitPlatform()
 }
+
