@@ -1,17 +1,5 @@
-package ru.java.backend.todo.todobackend.search;
+package ru.java.backend.todo.todobackend.search
 
+data class CategorySearchValues (val email: String, val title: String?)
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@AllArgsConstructor
-@NoArgsConstructor
-@Setter
-@Getter
-public class CategorySearchValues {
-
-    private String title;
-    private String email;
-}
+data class PrioritySearchValues(val email: String, val title: String?)
