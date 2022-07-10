@@ -1,16 +1,16 @@
 plugins {
-    id 'org.springframework.boot' version '2.5.3'
-    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
-    id 'java'
-    id 'org.jetbrains.kotlin.jvm' version '1.7.10'
-    id "org.jetbrains.kotlin.plugin.spring" version "1.7.10" // для корректног создания  spring   beans из котлин класса
-    id "org.jetbrains.kotlin.plugin.jpa" version "1.7.10" // для корректной работы hibernate/jps с kotlin
-    id "org.jetbrains.kotlin.plugin.allopen" version "1.5.31" // делате все классы kotlin open
+    id 'org.springframework.boot' version '2.5.4' // собирает правильно springboot проект
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE' // управление зависимостями, версиями
+    id 'java' // компиляция и работа обычными java классами
+    id "org.jetbrains.kotlin.jvm" version "1.6.0-RC" // для корректной компиляции kotlin классов для jvm
+    id "org.jetbrains.kotlin.plugin.spring" version "1.6.0-RC" // для корректного создания spring бинов из котлин классов
+    id "org.jetbrains.kotlin.plugin.jpa" version "1.6.0-RC" // для корректной работы hibernate/jpa с kotlin
+    id "org.jetbrains.kotlin.plugin.allopen" version "1.5.31" // делает все классы kotlin open, а не final
 }
 
-group = 'ru.java.backend.todo'
+group = 'ru.javabegin.backend.todo'
 version = '0.0.1-SNAPSHOT'
-sourceCompatibility = '11'
+sourceCompatibility = '16'
 
 configurations {
     compileOnly {
@@ -23,34 +23,33 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    //  implementation 'org.springframework.boot:spring-boot-starter-security'
+    // стартеры SpringBoot
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation group: 'org.springframework.boot', name: 'spring-boot-starter-aop', version: '2.5.3'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+    // только для разработки (в боевом приложении его не будет)
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
 
-    //driver db
-    runtimeOnly 'org.postgresql:postgresql'
-
-    //lombok
+    // lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor'
     annotationProcessor 'org.projectlombok:lombok'
 
-    //для корректной работы котлин классов
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-    implementation group: 'com.fasterxml.jackson.module', name: 'jackson-module-kotlin', version: '2.13.3'
+    // драйвер БД
+    runtimeOnly 'org.postgresql:postgresql'
+
+    // для корректной работы kotlin классов в spring приложении
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    // testImplementation 'org.springframework.security:spring-security-test'
-}
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 
-test {
-    useJUnitPlatform()
 }
-
-compileTestKotlin {
+compileKotlin {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "16"
     }
 }
+
+
+

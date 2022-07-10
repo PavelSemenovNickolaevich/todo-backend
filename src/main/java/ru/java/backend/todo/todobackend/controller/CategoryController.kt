@@ -1,103 +1,116 @@
-package ru.java.backend.todo.todobackend.controller;
+package ru.java.backend.todo.todobackend.controller
 
-import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import ru.java.backend.todo.todobackend.entity.Category;
-import ru.java.backend.todo.todobackend.search.CategorySearchValues;
-import ru.java.backend.todo.todobackend.service.CategoryService;
+import org.springframework.dao.EmptyResultDataAccessException
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import ru.java.backend.todo.todobackend.entity.Category
+import ru.java.backend.todo.todobackend.search.CategorySearchValues
+import ru.java.backend.todo.todobackend.service.CategoryService
+import java.util.*
 
-import java.util.List;
-import java.util.NoSuchElementException;
+/*
 
+Используем @RestController вместо обычного @Controller, чтобы все ответы сразу оборачивались в JSON,
+иначе пришлось бы добавлять лишние объекты в код, использовать @ResponseBody для ответа, указывать тип отправки JSON
+
+Названия методов могут быть любыми, главное не дублировать их имена внутри класса и URL mapping
+
+*/
 @RestController
-@RequestMapping("/category")
-public class CategoryController {
+@RequestMapping("/category") // базовый URI
 
-    private CategoryService categoryService;
+// используем автоматическое внедрение экземпляра класса через конструктор
+// не используем @Autowired ля переменной класса, т.к. "Field injection is not recommended "
+class CategoryController
+    (
+    private val categoryService: CategoryService // доступ к данным из БД
 
-    public CategoryController(CategoryService categoryService) {
-        this.categoryService = categoryService;
-    }
-
-    @GetMapping("/id")
-    public Category findBuId() {
-        return categoryService.findById(60207L);
-    }
+) {
 
     @PostMapping("/all")
-    public List<Category> findAll(@RequestBody String email) {
-        return categoryService.findAll(email);
+    fun findAll(@RequestBody email: String): List<Category> {
+        return categoryService.findAll(email)
     }
 
     @PostMapping("/add")
-    public ResponseEntity<Category> add(@RequestBody Category category) {
-        //Проверка на необязательные параметры
-        if (category.getId() != null && category.getId() != 0) {
-            return new ResponseEntity("reduundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE);
-        }
-        //если передать пустое значение title
-        if (category.getTitle() == null || category.getTitle().trim().length() == 0) {
-            return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
+    fun add(@RequestBody category: Category): ResponseEntity<Any> {
+
+        // проверка на обязательные параметры
+        if (category.id != null && category.id != 0L) { // это означает, что id заполнено
+            // id создается автоматически в БД (autoincrement), поэтому его передавать не нужно, иначе может быть конфликт уникальности значения
+            return ResponseEntity<Any>("redundant param: id MUST be null", HttpStatus.NOT_ACCEPTABLE)
         }
 
-        return ResponseEntity.ok(categoryService.add(category));
+        if (category.title == null || category.title.trim().isEmpty()) {
+            return ResponseEntity<Any>("missed param: title MUST be not null", HttpStatus.NOT_ACCEPTABLE)
+        }
+
+        // если передали пустое значение title
+        return ResponseEntity.ok(categoryService.add(category)) // возвращаем добавленный объект с заполненным ID
+
     }
 
     @PutMapping("/update")
-    public ResponseEntity update(@RequestBody Category category) {
-        //Проверка на обязательные  параметры
-        if (category.getId() == null || category.getId() == 0) {
-            return new ResponseEntity("missed param: id ", HttpStatus.NOT_ACCEPTABLE);
-        }
-        //если передать пустое значение title
-        if (category.getTitle() == null || category.getTitle().trim().length() == 0) {
-            return new ResponseEntity("missed param: title", HttpStatus.NOT_ACCEPTABLE);
+    fun update(@RequestBody category: Category): ResponseEntity<Any> {
+
+        // проверка на обязательные параметры
+        if (category.id == null || category.id == 0L) {
+            return ResponseEntity<Any>("missed param: id", HttpStatus.NOT_ACCEPTABLE)
         }
 
-        categoryService.update(category);
-        return new ResponseEntity(HttpStatus.OK);
+        // если передали пустое значение title
+        if (category.title == null || category.title.trim().isEmpty()) {
+            return ResponseEntity<Any>("missed param: title", HttpStatus.NOT_ACCEPTABLE)
+        }
+
+        // save работает как на добавление, так и на обновление
+        categoryService.update(category)
+        return ResponseEntity<Any>(HttpStatus.OK) // просто отправляем статус 200 (операция прошла успешно)
     }
 
+    // для удаления используем тип запроса DELETE и передаем ID для удаления
+    // можно также использовать метод POST и передавать ID в теле запроса
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity deleteById(@PathVariable("id") long id) {
-        try {
-            categoryService.deleteById(id);
-        } catch (EmptyResultDataAccessException e) {
-            e.printStackTrace();
-            return new ResponseEntity("Id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
-        }
-        return new ResponseEntity(HttpStatus.OK);
-    }
+    fun delete(@PathVariable("id") id: Long): ResponseEntity<Any> {
 
+        // можно обойтись и без try-catch, тогда будет возвращаться полная ошибка (stacktrace)
+        // здесь показан пример, как можно обрабатывать исключение и отправлять свой текст/статус
+        try {
+            categoryService.deleteById(id)
+        } catch (e: EmptyResultDataAccessException) {
+            e.printStackTrace()
+            return ResponseEntity<Any>("id=$id not found", HttpStatus.NOT_ACCEPTABLE)
+        }
+        return ResponseEntity<Any>(HttpStatus.OK) // просто отправляем статус 200 без объектов (операция прошла успешно)
+    }
 
     // поиск по любым параметрам CategorySearchValues
     @PostMapping("/search")
-    public ResponseEntity<List<Category>> search(@RequestBody CategorySearchValues categorySearchValues) {
+    fun search(@RequestBody categorySearchValues: CategorySearchValues): ResponseEntity<Any> {
 
         // проверка на обязательные параметры
-        if (categorySearchValues.getEmail() == null || categorySearchValues.getEmail().trim().length() == 0) {
-            return new ResponseEntity("missed param: email", HttpStatus.NOT_ACCEPTABLE);
+        if (categorySearchValues.email == null || categorySearchValues.email.trim().isEmpty()) {
+            return ResponseEntity<Any>("missed param: email", HttpStatus.NOT_ACCEPTABLE)
         }
 
         // поиск категорий пользователя по названию
-        List<Category> list = categoryService.findByTitle(categorySearchValues.getTitle(), categorySearchValues.getEmail());
-
-        return ResponseEntity.ok(list);
+        val list = categoryService.findByTitle(categorySearchValues.title, categorySearchValues.email)
+        return ResponseEntity.ok(list)
     }
 
+    // параметр id передаются не в BODY запроса, а в самом URL
     @PostMapping("/id")
-    public ResponseEntity<Category> searchCategoryById(@RequestBody Long id) {
+    fun findById(@RequestBody id: Long): ResponseEntity<Any> {
 
-        Category category = null;
-
-        try {
-            category = categoryService.findById(id);
-        } catch (NoSuchElementException e) {
-            e.printStackTrace();
-            return new ResponseEntity("Id = " + id + " not found", HttpStatus.NOT_ACCEPTABLE);
+        // можно обойтись и без try-catch, тогда будет возвращаться полная ошибка (stacktrace)
+        // здесь показан пример, как можно обрабатывать исключение и отправлять свой текст/статус
+        var category: Category = try {
+            categoryService.findById(id)
+        } catch (e: NoSuchElementException) { // если объект не будет найден
+            e.printStackTrace()
+            return ResponseEntity<Any>("id=$id not found", HttpStatus.NOT_ACCEPTABLE)
         }
-        return ResponseEntity.ok(category);
+        return ResponseEntity.ok(category)
     }
 }

@@ -1,12 +1,10 @@
-package ru.java.backend.todo.todobackend.controller;
+package ru.java.backend.todo.todobackend.controller
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
-import ru.java.backend.todo.todobackend.entity.Stat;
-import ru.java.backend.todo.todobackend.service.StatService;
-
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RestController
+import ru.java.backend.todo.todobackend.service.StatService
 
 /*
 
@@ -21,27 +19,22 @@ import ru.java.backend.todo.todobackend.service.StatService;
 Названия методов могут быть любыми, главное не дублировать их имена и URL mapping
 
 */
+@RestController // базовый URI не нужен, т.к. метод только один
 
-@RestController
+// сервис для доступа к данным (напрямую к репозиториям не обращаемся)
+// используем автоматическое внедрение экземпляра класса через конструктор
+// не используем @Autowired ля переменной класса, т.к. "Field injection is not recommended "
 
-public class StatController {
-
-    private final StatService statService; // сервис для доступа к данным (напрямую к репозиториям не обращаемся)
-
-    // автоматическое внедрение экземпляра класса через конструктор
-    // не используем @Autowired ля переменной класса, т.к. "Field injection is not recommended "
-    public StatController(StatService statService) {
-        this.statService = statService;
-    }
-
+class StatController
+    (
+    private val statService: StatService
+) {
 
     // для статистика всгда получаем только одну строку с id=1 (согласно таблице БД)
     @PostMapping("/stat")
-    public ResponseEntity<Stat> findByEmail(@RequestBody String email) {
+    fun findByEmail(@RequestBody email: String): ResponseEntity<Any> {
 
         // можно не использовать ResponseEntity, а просто вернуть коллекцию, код все равно будет 200 ОК
-        return ResponseEntity.ok(statService.findStat(email));
+        return ResponseEntity.ok(statService.findStat(email))
     }
-
-
 }
