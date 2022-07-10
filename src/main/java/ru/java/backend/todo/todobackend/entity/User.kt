@@ -1,65 +1,41 @@
-package ru.java.backend.todo.todobackend.entity;
+package ru.java.backend.todo.todobackend.entity
 
-
+import com.fasterxml.jackson.annotation.JsonProperty
+import java.util.*
+import javax.persistence.*
 
 /*
 
 пользователь - основной объект, с которым связаны все остальные (через внешние ключи)
 
- */
-
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import org.hibernate.annotations.CacheConcurrencyStrategy;
-
-import javax.persistence.*;
-import java.util.Objects;
-import java.util.Set;
-
-@Entity
+*/@Entity
 @Table(name = "user_data", schema = "todolist", catalog = "postgres")
-@Setter
-@Getter
-@AllArgsConstructor
-@NoArgsConstructor
-@Cacheable
-@org.hibernate.annotations.Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-public class User {
-
+class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private String email;
-
-    private String username;
+    val id: Long? = null
+    val email: String? = null
+    val username: String? = null
 
     @Column(name = "userpassword")
-    private String password;
+    val password: String? = null
 
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @ManyToMany(mappedBy = "users")
-    private Set<Role> roles;
+    val roles: Set<Role>? = null
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id.equals(user.id);
+    override fun equals(o: Any?): Boolean {
+        if (this === o) return true
+        if (o == null || javaClass != o.javaClass) return false
+        val user = o as User
+        return id == user.id
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
+    override fun hashCode(): Int {
+        return Objects.hash(id)
     }
 
-    @Override
-    public String toString() {
-        return username;
+    override fun toString(): String {
+        return username!!
     }
 }

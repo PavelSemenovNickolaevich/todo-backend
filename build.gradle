@@ -4,7 +4,8 @@ plugins {
     id 'java'
     id 'org.jetbrains.kotlin.jvm' version '1.7.10'
     id "org.jetbrains.kotlin.plugin.spring" version "1.7.10" // для корректног создания  spring   beans из котлин класса
-    id "org.jetbrains.kotlin.plugin.jpa" version "1.7.10"
+    id "org.jetbrains.kotlin.plugin.jpa" version "1.7.10" // для корректной работы hibernate/jps с kotlin
+    id "org.jetbrains.kotlin.plugin.allopen" version "1.5.31" // делате все классы kotlin open
 }
 
 group = 'ru.java.backend.todo'
