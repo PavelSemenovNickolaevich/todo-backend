@@ -1,50 +1,40 @@
-package ru.java.backend.todo.todobackend.service;
+package ru.java.backend.todo.todobackend.service
 
-import org.springframework.stereotype.Service;
-import ru.java.backend.todo.todobackend.entity.Priority;
-import ru.java.backend.todo.todobackend.repo.PriorityRepository;
-
-import javax.transaction.Transactional;
-import java.util.List;
+import org.springframework.stereotype.Service
+import ru.java.backend.todo.todobackend.entity.Priority
+import ru.java.backend.todo.todobackend.repo.PriorityRepository
+import javax.transaction.Transactional
 
 // всегда нужно создавать отдельный класс Service для доступа к данным, даже если кажется,
 // что мало методов или это все можно реализовать сразу в контроллере
 // Такой подход полезен для будущих доработок и правильной архитектуры (особенно, если работаете с транзакциями)
-@Service
-
-// все методы класса должны выполниться без ошибки, чтобы транзакция завершилась
+@Service // все методы класса должны выполниться без ошибки, чтобы транзакция завершилась
 // если в методе возникнет исключение - все выполненные операции из данного метода откатятся (Rollback)
 @Transactional
-public class PriorityService {
-
-    private final PriorityRepository repository; // сервис имеет право обращаться к репозиторию (БД)
-
-    public PriorityService(PriorityRepository repository) {
-        this.repository = repository;
+class PriorityService(  // сервис имеет право обращаться к репозиторию (БД)
+    private val repository: PriorityRepository
+) {
+    fun findAll(email: String): List<Priority> {
+        return repository.findByUserEmailOrderByIdAsc(email)
     }
 
-    public List<Priority> findAll(String email) {
-        return repository.findByUserEmailOrderByIdAsc(email);
+    fun add(priority: Priority): Priority {
+        return repository.save(priority) // метод save обновляет или создает новый объект, если его не было
     }
 
-    public Priority add(Priority priority) {
-        return repository.save(priority); // метод save обновляет или создает новый объект, если его не было
+    fun update(priority: Priority): Priority {
+        return repository.save(priority) // метод save обновляет или создает новый объект, если его не было
     }
 
-    public Priority update(Priority priority) {
-        return repository.save(priority); // метод save обновляет или создает новый объект, если его не было
+    fun deleteById(id: Long) {
+        repository.deleteById(id)
     }
 
-    public void deleteById(Long id) {
-        repository.deleteById(id);
+    fun findById(id: Long): Priority {
+        return repository.findById(id).get() // т.к. возвращается Optional - можно получить объект методом get()
     }
 
-    public Priority findById(Long id) {
-        return repository.findById(id).get(); // т.к. возвращается Optional - можно получить объект методом get()
+    fun find(title: String?, email: String): List<Priority> {
+        return repository.findByTitle(title, email)
     }
-
-    public List<Priority> find(String title, String email) {
-        return repository.findByTitle(title, email);
-    }
-
 }
